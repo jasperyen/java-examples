@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        
+        <script src="jquery-2.2.3.min.js" type="text/javascript"></script>
+        <script>
+            function clickpost( formdata ){
+                var file = formdata.myfile.files[0];
+                
+                alert(file.size);
+            }
+        </script>
+        
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    <body>
+        <div>
+            <form method="POST">
+               // <textarea name="txt" rows ="2" cols = "40" required="required"></textarea>
+                <input type="hidden" name="userid" value="410306224">
+                <input type="hidden" name="room" value="0000">
+                <input type="hidden" name="type" value="text">
+                <input type="file" accept="image/*" name="myfile" >
+                <input type="submit" name="postText" value="送出" onclick="clickpost(this.form)">
+            </form>
+        </div>
+    </body>
+</html>
