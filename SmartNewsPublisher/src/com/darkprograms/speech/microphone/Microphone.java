@@ -1,9 +1,18 @@
 package com.darkprograms.speech.microphone;
 
-import javax.sound.sampled.*;
 
 import java.io.Closeable;
 import java.io.File;
+
+import javaFlacEncoder.FLACFileWriter;
+
+import javax.sound.sampled.AudioFileFormat;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 
 /***************************************************************************
  * Microphone class that contains methods to capture audio from microphone
@@ -211,7 +220,10 @@ public class Microphone implements Closeable{
                 AudioFileFormat.Type fileType = getFileType();
                 File audioFile = getAudioFile();
                 open();
-                AudioSystem.write(new AudioInputStream(getTargetDataLine()), fileType, audioFile);
+                
+                new FLACFileWriter().write(new AudioInputStream(getTargetDataLine()), fileType, audioFile);
+                //AudioSystem.write(new AudioInputStream(getTargetDataLine()), fileType, audioFile);
+                
                 //Will write to File until it's closed.
             } catch (Exception ex) {
                 ex.printStackTrace();
