@@ -43,13 +43,10 @@ public class NewsPublisher {
     //  < 英文名字, [新聞嗜好 . . .] >
     private static final Map<String, List<String>> focusMap;
     
-    private static final Map<String, List<String>> haveReadMap;
-    
     
     static {
         namesMap = new TreeMap<>();
         focusMap = new TreeMap<>();
-        haveReadMap = new TreeMap<>();
         
         loadJSONData();
     }
@@ -95,13 +92,6 @@ public class NewsPublisher {
     public String getChName(String enName){ 
         loadJSONData();
         return namesMap.get(enName);
-    }
-    
-    public void addHaveRead (String name, String title) {
-        if (!haveReadMap.containsKey(name))
-            haveReadMap.put(name, new ArrayList<>());
-        
-        haveReadMap.get(name).add(title);
     }
     
     public boolean getNewsByName(String name, Map<String, String> newsMap){

@@ -2,10 +2,7 @@
 package smartnewspublisher;
 
 import com.darkprograms.speech.synthesiser.Synthesiser;
-import java.io.File;
-import java.io.FileInputStream;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -29,11 +26,11 @@ public class SmartNewsPublisher {
 
     private static final Logger logger = Logger.getLogger(SmartNewsPublisher.class.getName());
     
-    public static final String TEMP_PATH = "C:\\workspace\\temp\\";
-    //public static final String TEMP_PATH = "/home/pi/workspace/SmartNewsPublisher/temp/";
+    //public static final String TEMP_PATH = "C:\\workspace\\temp\\";
+    public static final String TEMP_PATH = "/home/pi/workspace/SmartNewsPublisher/temp/";
     
-    private static final String CHROME_CMD = "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\" --app=";
-    //private static final String CHROME_CMD = "./run_chrome.sh ";
+    //private static final String CHROME_CMD = "\"C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe\" --app=";
+    private static final String CHROME_CMD = "./run_chrome.sh ";
     
     public static final String API_KEY = "AIzaSyBsIounZbhWreS9StJyp0wygE5cxsDhDOo";
     
@@ -41,6 +38,7 @@ public class SmartNewsPublisher {
     private static final FaceReceiver receiver;
     private static final SpeechListener listener;
     private static final NewsPublisher publisher;
+    private static final Map<String, List<String>> haveReadMap;
     
     static {
         Locale.setDefault(new Locale("en", "EN"));
@@ -48,42 +46,20 @@ public class SmartNewsPublisher {
         System.setProperty("java.util.logging.SimpleFormatter.format", 
             "%4$s %1$tm-%1$td %1$tH:%1$tM:%1$tS %5$s%6$s%n");
         
+        haveReadMap = new TreeMap<>();
+        
         recordFrame = new RecordJFrame("Recoding . . .");
-        recordFrame.showFrame();
-        
-        receiver = new FaceReceiver("127.0.0.1", 8000);
-        
+        receiver = new FaceReceiver("192.168.3.121", 8700);
         listener = new SpeechListener();
         publisher = new NewsPublisher();
     }
     
     private static void publishController() {
-        
-        //System.out.println(listener.askForYes());
-        Map<String, String> m = new TreeMap<>();
-        
-        publisher.getNewsByName("Jasper", m);
-        //System.out.println(m);
-        Entry<String, String> e = m.entrySet().iterator().next();
-        
-        System.out.println(e);
-        //talkZh(e.getKey());
-        
-        try {
-            Process p = Runtime.getRuntime().exec(CHROME_CMD + e.getValue());
-            try {
-                p.waitFor();
-            } catch (InterruptedException ex) {}
-        } catch (IOException ex) {
-            logger.log(Level.WARNING, "Chrome in IOException : {0}", ex.toString());
-        }
-        
-        System.out.println("end");
-        
-        /*
+     
         while (true) {
             
             String enName;
+            receiver.clearListBuffer();
             do {
                 try {
                     Thread.sleep(500);
@@ -101,13 +77,16 @@ public class SmartNewsPublisher {
             
             receiver.sendStop();
             
-            talkZh("你好 " + chName + " 要看新聞嗎");
+            talkZh("你好 " + chName + " 要為您播報新聞嗎");
             
+            recordFrame.showFrame();
             if (!listener.askForYes()) {
-                talkZh("不要就算了");
+                talkZh("好的");
+                recordFrame.hideFrame();
                 receiver.sendStart();
                 continue;
             }
+            recordFrame.hideFrame();
             
             Map<String, String> newsMap = new TreeMap<>();
             
@@ -117,12 +96,21 @@ public class SmartNewsPublisher {
                 continue;
             }
             
-            Entry<String, String> news = m.entrySet().iterator().next();
-            publisher.addHaveRead(enName, news.getKey());
-            talkZh("找到新聞 " + news.getKey());
+            Entry<String, String> news = null;
+            for (Entry<String, String> n : newsMap.entrySet())
+                if (!checkHaveRead(enName, n)) {
+                    news = n;
+                    break;
+                }
+            
+            if (news == null)
+                news = newsMap.entrySet().iterator().next();
+            
+            addHaveRead(enName, news.getKey());
+            talkZh("為您找到新聞 " + news.getKey());
             
             try {
-                Process p = Runtime.getRuntime().exec(CHROME_CMD + e.getValue());
+                Process p = Runtime.getRuntime().exec(CHROME_CMD + news.getValue());
                 p.waitFor();
             } 
             catch (InterruptedException ex) {}
@@ -132,7 +120,7 @@ public class SmartNewsPublisher {
             talkZh("掰掰");
             receiver.sendStart();
         }
-        */
+        
     }
 
     private static void talkZh(String text){
@@ -160,6 +148,20 @@ public class SmartNewsPublisher {
         
         talkThread.start();
    }
+    
+    private static void addHaveRead (String name, String title) {
+        if (!haveReadMap.containsKey(name))
+            haveReadMap.put(name, new ArrayList<>());
+        
+        haveReadMap.get(name).add(title);
+    }
+    
+    private static boolean checkHaveRead (String name, Entry<String, String> e) {
+        if (!haveReadMap.containsKey(name))
+            return false;
+        else
+            return haveReadMap.get(name).contains(e.getKey());
+    }
     
     public static void main(String[] args) {
         publishController();

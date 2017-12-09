@@ -27,7 +27,7 @@ public class SpeechListener {
     private static final Logger logger = Logger.getLogger(SpeechListener.class.getName());
     
     private static final List<String> yesList = 
-            Arrays.asList("是", "好", "要");
+            Arrays.asList("是", "好", "要", "可", "對", "行");
     
     private static final List<String> noList = 
             Arrays.asList("不");
@@ -55,34 +55,38 @@ public class SpeechListener {
     
     
     public boolean ambientListeningLoop() {
-        final int LOOP_THRESHOLD = 20;
-        final int SOUND_THRESHOLD = 8;
+        final int LOOP_THRESHOLD = 50;
+        final int MIN_RECORD_SEC = 5;
+        final int SOUND_THRESHOLD = 60;
         
         int volume;
         
         try {
+            recFile.delete();
+                
             mic.open();
             
             for (int i = 0; i < LOOP_THRESHOLD; i++) {
                 volume = mic.getAudioVolume();
-                System.out.println("Current volume : " + volume);
-
+                
                 if (volume < SOUND_THRESHOLD){
-                    System.out.println("Nobody speek...");
-                    Thread.sleep(500);
+                    logger.log(Level.INFO, "Nobody speeking... Current volume : {0}", volume);
+                    Thread.sleep(200);
                 }
                 else{
-                    System.out.println("Start recording...");
+                    logger.log(Level.INFO, "Start record, Current volume : {0}", volume);
+                    
                     mic.captureAudioToFile(recFile);
-
+                    Thread.sleep(MIN_RECORD_SEC * 1000);
+                    
                     do{
                         Thread.sleep(1000);
                         volume = mic.getAudioVolume();
                         
-                        System.out.println("Current volume : " + volume);
+                        logger.log(Level.INFO, "Recording... Current volume : {0}", volume);
                     }while(volume > SOUND_THRESHOLD);
 
-                    System.out.println("Recording Complete!");
+                    logger.log(Level.INFO, "Recording Complete !");
                     return true;
                 }
             }
@@ -105,13 +109,11 @@ public class SpeechListener {
         }
         
         if(response.getResponse() == null){
-            System.out.println("No response");
+            logger.log(Level.INFO, "No response");
             return false;
 	}
         
-        response.getAllPossibleResponses().forEach( s -> {
-            System.out.println("\t" + s);
-        });
+        logger.log(Level.INFO, "Google response : {0}", response.getAllPossibleResponses().toString());
         
         
         //  排除否定
