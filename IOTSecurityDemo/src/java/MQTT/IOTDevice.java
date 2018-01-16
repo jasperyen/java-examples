@@ -54,9 +54,8 @@ public class IOTDevice {
 
     static {
         addIOTDevice("device-noid", "no-uid");
-        addIOTDevice("device-0D22", "011A2888028AD1190D22");
-        addIOTDevice("device-E923", "011A2888028AD091E923");
-        addIOTDevice("device-1123", "011A2888028AD0691123");
+        addIOTDevice("device-0D22", "0514011A2888028AD1190D22");
+        addIOTDevice("device-E923", "0514011A2888028AD091E923");
     }
     
     public static void addIOTDevice (String deviceName, String deviceUid) {
@@ -130,7 +129,7 @@ public class IOTDevice {
             URL loginURL = new URL("http://60.250.111.124/vendorTrial/api/iBadgeService.php");
             HttpURLConnection con = (HttpURLConnection) loginURL.openConnection();
         
-            String loginParam = "endpoint=UserLogin&mail=test%40example.com&passphrase=testpw123&submit=Login";
+            String loginParam = "endpoint=UserLogin&mail=iot28%40ttu.edu.tw&passphrase=testpw123&submit=Login";
             
             con.setRequestMethod("POST"); 
             con.setDoOutput(true);
@@ -159,10 +158,10 @@ public class IOTDevice {
             }
             
             
-            int errorCode = new JSONObject(response.toString()).getInt("errorCode");
-            
-            if (errorCode != 0)
-                throw new Exception("Login error with errorCode : " + errorCode);
+            //System.out.println(response);
+            //int errorCode = new JSONObject(response.toString()).getInt("errorCode");
+            //if (errorCode != 0)
+                //throw new Exception("Login error with errorCode : " + errorCode);
             
             if (cookieList.isEmpty())
                 throw new Exception("No response cookie");
@@ -201,10 +200,9 @@ public class IOTDevice {
             
             //System.out.println(response);
             
-            errorCode = new JSONObject(response.toString()).getInt("errorCode");
-            
-            if (errorCode != 0)
-                throw new Exception("Query error with errorCode : " + errorCode);
+            //errorCode = new JSONObject(response.toString()).getInt("errorCode");
+            //if (errorCode != 0)
+                //throw new Exception("Query error with errorCode : " + errorCode);
             
             JSONArray deviceList = new JSONObject(response.toString()).getJSONArray("deviceList");
             

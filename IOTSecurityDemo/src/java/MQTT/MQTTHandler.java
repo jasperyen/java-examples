@@ -7,7 +7,6 @@ import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Hex;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -89,7 +88,7 @@ public class MQTTHandler implements MqttCallback {
         MqttTopic topic = client.getTopic(PUB_TOPIC + "/" + device);
         
         MqttMessage message = new MqttMessage();
-        message.setQos(2);
+        message.setQos(1);
         message.setPayload(txt.getBytes(StandardCharsets.UTF_8));
         
         publish(topic, message);

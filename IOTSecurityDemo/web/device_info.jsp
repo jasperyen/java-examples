@@ -4,6 +4,7 @@
     Author     : Jasper
 --%>
 
+<%@page import="java.util.Collections"%>
 <%@page import="java.time.format.DateTimeFormatter"%>
 <%@page import="MQTT.IOTDevice.Stamp"%>
 <%@page import="java.util.List"%>
@@ -52,6 +53,7 @@
         logList.add(line);
     }
     
+    Collections.reverse(logList);
 %>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
