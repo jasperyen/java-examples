@@ -53,8 +53,10 @@ public class IOTDevice {
     }
 
     static {
-        addIOTDevice("device-1", "no-uid");
-        addIOTDevice("device-2", "0514011A2888028AF1282522");
+        addIOTDevice("device-noid", "no-uid");
+        addIOTDevice("device-0D22", "011A2888028AD1190D22");
+        addIOTDevice("device-E923", "011A2888028AD091E923");
+        addIOTDevice("device-1123", "011A2888028AD0691123");
     }
     
     public static void addIOTDevice (String deviceName, String deviceUid) {

@@ -5,8 +5,11 @@ import java.nio.charset.StandardCharsets;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.Cipher;
+import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.xml.bind.DatatypeConverter;
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Hex;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -105,20 +108,20 @@ public class MQTTHandler implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws MqttException {
         
-        String txt = new String(message.getPayload());
+        String hexTxt = new String(message.getPayload());
         
         logger.log(Level.INFO, "messageArrived : topic - {0}, Qos - {1}, message - {2}",
-                    new String[]{topic, message.getQos() + "", txt} );
+                    new String[]{topic, message.getQos() + "", hexTxt} );
         
         if (!topic.startsWith(SUB_TOPIC))
             return;
         
         String device = topic.substring( topic.indexOf(SUB_TOPIC) + SUB_TOPIC.length() + 1 );
         
-        deviceHandler(device, txt);
+        deviceHandler(device, hexTxt);
     }
     
-    private static void deviceHandler (String device, String txt) {
+    private static void deviceHandler (String device, String hexTxt) {
        
         try {
             IOTDevice d = IOTDevice.getDeviceByName(device);
@@ -127,7 +130,7 @@ public class MQTTHandler implements MqttCallback {
                 return;
             
             String key = d.getAESKey();
-            String jsonString = decryptText(txt, key);
+            String jsonString = decryptText(hexTxt, key);
             
             logger.log(Level.INFO, "decryptText : {0}", jsonString);
             
@@ -146,43 +149,62 @@ public class MQTTHandler implements MqttCallback {
             JSONObject pubJson = new JSONObject();
             pubJson.put("s", state ? 1 : 0);
             
-            logger.log(Level.INFO, "encryptText : {0}", pubJson.toString());
+            jsonString = pubJson.toString();
+            logger.log(Level.INFO, "publish json : {0}", jsonString);
             
             //publish(device, pubJson.toString());
-            publish(device, encryptText(pubJson.toString(), key));
+            publish(device, encryptText(ASCII2Hex(jsonString), key));
             
         } catch (Exception ex) {
             logger.log(Level.WARNING, "deviceHandler failed : {0}", ex.toString());
         }
     }
     
-    private static String decryptText (String txt, String key) throws Exception {
+    private static String decryptText (String hexTxt, String hexKey) throws Exception {
         
-        SecretKeySpec spec = new SecretKeySpec(toByteArray(key), "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, spec);
+        byte[] key = hex2Byte(hexKey);
+        Cipher cipher = Cipher.getInstance("AES/CBC/NOPADDING");
         
-        byte[] original = cipher.doFinal(toByteArray(txt));
+        cipher.init(Cipher.DECRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(getDefultIv()));
         
-        return new String(original);
+        byte[] decryptData = cipher.doFinal(hex2Byte(hexTxt));
+        
+        return byte2ASCII(decryptData);
     }
     
-    private static String encryptText (String txt, String key) throws Exception {
+    private static String encryptText (String hexTxt, String hexKey) throws Exception {
         
-        SecretKeySpec spec = new SecretKeySpec(toByteArray(key), "AES");
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.ENCRYPT_MODE, spec);
+        byte[] key = hex2Byte(hexKey);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
         
-        byte[] encryptData = cipher.doFinal(txt.getBytes());
+        cipher.init(Cipher.ENCRYPT_MODE, new SecretKeySpec(key, "AES"), new IvParameterSpec(getDefultIv()));
         
-        return toHexString(encryptData);
+        byte[] encryptData = cipher.doFinal(hex2Byte(hexTxt));
+        
+        return byte2Hex(encryptData);
     }
     
-    public static String toHexString(byte[] array) {
-        return DatatypeConverter.printHexBinary(array).toUpperCase();
+    public static byte[] getDefultIv() throws DecoderException {
+        return hex2Byte("00000000000000000000000000000000");
     }
-
-    public static byte[] toByteArray(String s) {
-        return DatatypeConverter.parseHexBinary(s.toUpperCase());
+    
+    public static String hex2ASCII(String hex) throws DecoderException {
+        return byte2ASCII(hex2Byte(hex));
+    }
+    
+    public static String byte2ASCII(byte[] data)  {
+        return new String(data, StandardCharsets.US_ASCII);
+    }
+    
+    public static String ASCII2Hex(String ascii) {
+        return byte2Hex(ascii.getBytes(StandardCharsets.US_ASCII));
+    }
+    
+    public static String byte2Hex(byte[] data) {
+        return Hex.encodeHexString(data, false);
+    }
+    
+    public static byte[] hex2Byte(String hex) throws DecoderException {
+        return Hex.decodeHex(hex.toCharArray());
     }
 }

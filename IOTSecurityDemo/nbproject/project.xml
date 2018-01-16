@@ -14,8 +14,25 @@
                     <file>${libs.json-20171018.classpath}</file>
                     <path-in-war>WEB-INF/lib</path-in-war>
                 </library>
+                <library dirs="200">
+                    <file>${libs.commons-codec-1.11.classpath}</file>
+                    <path-in-war>WEB-INF/lib</path-in-war>
+                </library>
             </web-module-libraries>
-            <web-module-additional-libraries/>
+            <web-module-additional-libraries>
+                <library dirs="200">
+                    <file>${libs.json-20171018.classpath}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${libs.org.eclipse.paho.client.mqttv3-1.2.0.classpath}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+                <library dirs="200">
+                    <file>${libs.commons-codec-1.11.classpath}</file>
+                    <path-in-war>/</path-in-war>
+                </library>
+            </web-module-additional-libraries>
             <source-roots>
                 <root id="src.dir"/>
             </source-roots>
