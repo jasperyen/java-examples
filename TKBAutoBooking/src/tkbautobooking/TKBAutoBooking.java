@@ -41,8 +41,7 @@ public class TKBAutoBooking {
     private static final Scanner console = new Scanner(System.in);
     
     private static final String RSA_PUBLIC_KEY = "30819f300d06092a864886f70d010101050003818d003081890281810099b2e144cc224facbb786d3783867da85c9959fc85c440e2d4798632a4397a60a9c1eab38c1644650a7176254d1edd419faadec0f2af4635e86249f656a086787e0ff1a666176f31a7c4ddcf40b1b68556c78dba32e8e1985fb1041f2d6c638ac5cbd5823394c8406cc6d6b984997703605da53df2338a5be23ea604eac9bac30203010001";
-    //private static String RSA_DATA = "87ffa6213e190b34390caa73c9826f4d05dba328a03cf42bf4bbfd78917460bba9ecb3b6827ee62ffbab3ec32d545de812b8fb90cb640bce9fa6f266855526ec546edae71d6a5386a095420707f5e8b3e6ff3ec23adfb497554aba639d420ac2d91699468861d555b6394f101e8ca975512b8caa8a6c802b7aef75127bf1d3e9";
-    private static String RSA_DATA;
+    //private static String RSA_DATA;
     
     private BookingSystem bks;
     private int queryInterval = 5;
@@ -62,10 +61,10 @@ public class TKBAutoBooking {
             out.print("密碼 : ");
             USER_PASSWORD = console.next();
             
-            if (!checkPermission(USER_ID, RSA_DATA)) {
-                out.println("Permission denied !");
-                return;
-            }
+            //if (!checkPermission(USER_ID, RSA_DATA)) {
+            //    out.println("Permission denied !");
+            //    return;
+            //}
             
             bks = new BookingSystem(USER_ID, USER_PASSWORD);
             
@@ -249,12 +248,13 @@ public class TKBAutoBooking {
      */
     public static void main(String[] args) throws InterruptedException {
         
-        if ( (!SYSTEM_ENCODE.equals("UTF-8") && !SYSTEM_ENCODE.equals("UTF8")) || args.length < 1 ) {
-            out.println("\nPlease excude by following commond : java -Dfile.encoding=UTF8 -jar TKBAutoBooking.jar \"YOUR_RSA_KEY\"");
+        if ( (!SYSTEM_ENCODE.equals("UTF-8") && !SYSTEM_ENCODE.equals("UTF8")) /*|| args.length < 1 */) {
+            //out.println("\nPlease excude by following commond : java -Dfile.encoding=UTF8 -jar TKBAutoBooking.jar \"YOUR_RSA_KEY\"");
+            out.println("\nPlease excude by following commond : java -Dfile.encoding=UTF8 -jar TKBAutoBooking.jar");
             return;
         }
         
-        RSA_DATA = args[0];
+        //RSA_DATA = args[0];
         TKBAutoBooking tkb = new TKBAutoBooking();
     }
     
