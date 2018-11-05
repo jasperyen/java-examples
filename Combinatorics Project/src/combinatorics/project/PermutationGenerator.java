@@ -4,17 +4,16 @@
  * and open the template in the editor.
  */
 package combinatorics.project;
-import java.util.List;
 
 /**
  *
  * @author User
  * @param <T>
- * @param <L>
  */
-public abstract class PermutationGenerator<T extends Comparable, L extends List<T>> {
+public abstract class PermutationGenerator<T extends Comparable> {
     
-    public abstract boolean hasNext();
-    public abstract L goNext();
+    //public abstract boolean hasNext();
+    public abstract boolean goNext();
+    public abstract void reset();
     
 }
