@@ -14,11 +14,11 @@ import java.util.List;
  * @author User
  * @param <T>
  */
-public class IncrementCarryLex<T extends Comparable> extends PermutationGenerator<T> {
+public class DecrementCarryLex<T extends Comparable> extends PermutationGenerator<T> {
     private final List<T> list, sortList;
     private final char[] midNum;
     
-    public IncrementCarryLex(List<T> list) {
+    public DecrementCarryLex(List<T> list) {
         this.list = list;
         Collections.sort(list);
         
@@ -32,7 +32,7 @@ public class IncrementCarryLex<T extends Comparable> extends PermutationGenerato
     private boolean incMidNum() {
         int i;
         for (i = midNum.length-1; i >= 0; i--) {
-            char carry = (char)(midNum.length - i);
+            char carry = (char)(i + 1);
             if (++midNum[i] > carry)
                 midNum[i] = 0;
             else
@@ -43,7 +43,7 @@ public class IncrementCarryLex<T extends Comparable> extends PermutationGenerato
             return true;
         
         for (i = midNum.length-1; i >= 0; i--) {
-            char carry = (char)(midNum.length - i);
+            char carry = (char)(i + 1);
             midNum[i] = carry;
         }
         
@@ -60,8 +60,8 @@ public class IncrementCarryLex<T extends Comparable> extends PermutationGenerato
             list.set(i, min);
         
         for (int i = 0; i < midNum.length; i++) {
-            int n = midNum[i], index, count;
-            T t = sortList.get(list.size() - 1 - i);
+            int n = midNum[midNum.length-1 - i], index, count;
+            T t = sortList.get(list.size()-1 - i);
             
             for (index = list.size()-1, count = 0;;) {
                T tmp = list.get(index);
@@ -82,5 +82,4 @@ public class IncrementCarryLex<T extends Comparable> extends PermutationGenerato
         for (int i = 0; i < midNum.length; i++)
             midNum[i] = 0;
     }
-    
 }

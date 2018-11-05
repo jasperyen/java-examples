@@ -2,8 +2,6 @@
 package combinatorics.project;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,34 +12,38 @@ public class CombinatoricsProject {
 
     @SuppressWarnings("empty-statement")
     public static void main(String[] args) {
-        
-        
-        
-        List<Integer> arrayList = new ArrayList<>(Arrays.asList(0, 1, 2, 3, 4));
-        PermutationGenerator<Integer> pgArray = new IncrementCarryLex<>(arrayList);
-        
-        /*
-        List<Integer> arrayList = new ArrayList<>();
-        //List<Integer> linkedList = new LinkedList<>();
+        List<Integer> lexList = new ArrayList<>();
+        List<Integer> incList = new ArrayList<>();
+        List<Integer> decList = new ArrayList<>();
         
         for (int i = 0; i < 10; ++i) {
-            arrayList.add(i);
-            //linkedList.add(i);
+            lexList.add(i);
+            incList.add(i);
+            decList.add(i);
         }
         
-        PermutationGenerator<Integer> pgArray = new Lexicographic<>(arrayList);
-        //PermutationGenerator<Integer> pgLinked = new Lexicographic<>(linkedList);
+        PermutationGenerator<Integer> lex = new Lexicographic<>(lexList);
+        PermutationGenerator<Integer> inc = new IncrementCarryLex<>(incList);
+        PermutationGenerator<Integer> dec = new DecrementCarryLex<>(decList);
         
-        while(pgArray.goNext())
-            System.out.println(arrayList);
+        /*
+        int count;
+        for (count = 0; lex.goNext(); count++);
+        System.out.println(count);
+        for (count = 0; inc.goNext(); count++);
+        System.out.println(count);
+        for (count = 0; dec.goNext(); count++);
+        System.out.println(count);
         */
-        //benchMark(pgArray);
-        //benchMark(pgLinked);
         
+        System.out.println("Lexicographic benchmark : " + benchMark(lex));
+        System.out.println("IncrementCarryLex benchmark : " + benchMark(inc));
+        System.out.println("DecrementCarryLex benchmark : " + benchMark(dec));
     }
     
+    
     @SuppressWarnings("empty-statement")
-    private static void benchMark(PermutationGenerator pg) {
+    private static double benchMark(PermutationGenerator pg) {
         
         int count = 0;
         long sec = 1000 * 1000 * 1000;
@@ -58,8 +60,7 @@ public class CombinatoricsProject {
             total += System.nanoTime() - n;
         }
         
-        double avg = ((double)total / sec) / count;
-        System.out.println(avg);
+        return ((double)total / sec) / count;
     }
     
 }

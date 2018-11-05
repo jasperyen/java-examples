@@ -12,7 +12,6 @@ package combinatorics.project;
  */
 public abstract class PermutationGenerator<T extends Comparable> {
     
-    //public abstract boolean hasNext();
     public abstract boolean goNext();
     public abstract void reset();
     
