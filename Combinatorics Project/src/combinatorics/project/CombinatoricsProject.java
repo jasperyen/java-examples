@@ -12,6 +12,7 @@ public class CombinatoricsProject {
 
     @SuppressWarnings("empty-statement")
     public static void main(String[] args) {
+        List<Integer> sjtList = new ArrayList<>();
         List<Integer> lexList = new ArrayList<>();
         List<Integer> incList = new ArrayList<>();
         List<Integer> decList = new ArrayList<>();
@@ -20,11 +21,13 @@ public class CombinatoricsProject {
             lexList.add(i);
             incList.add(i);
             decList.add(i);
+            sjtList.add(i);
         }
         
         PermutationGenerator<Integer> lex = new Lexicographic<>(lexList);
         PermutationGenerator<Integer> inc = new IncrementCarryLex<>(incList);
         PermutationGenerator<Integer> dec = new DecrementCarryLex<>(decList);
+        PermutationGenerator<Integer> sjt = new SteinhausJohnsonTrotter<>(sjtList);
         
         /*
         int count;
@@ -34,11 +37,14 @@ public class CombinatoricsProject {
         System.out.println(count);
         for (count = 0; dec.goNext(); count++);
         System.out.println(count);
+        for (count = 0; sjt.goNext(); count++);
+        System.out.println(count);
         */
         
         System.out.println("Lexicographic benchmark : " + benchMark(lex));
         System.out.println("IncrementCarryLex benchmark : " + benchMark(inc));
         System.out.println("DecrementCarryLex benchmark : " + benchMark(dec));
+        System.out.println("SteinhausJohnsonTrotter benchmark : " + benchMark(sjt));
     }
     
     
